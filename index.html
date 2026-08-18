@@ -631,13 +631,17 @@
             display:none;
             flex-direction:column;align-items:center;
             width:min(96vw, 600px);
-            min-height:calc(100vh - 64px);
-            padding-top:74px;
+            height:calc(100vh - 64px);
+            padding-top:8px;
             padding-bottom:8px;
             box-sizing:border-box;
             position:relative;
-            margin-top:0;
+            margin:0 auto;
             justify-content:flex-start;
+            overflow-y:auto;
+            overflow-x:hidden;
+            -webkit-overflow-scrolling:touch;
+            overscroll-behavior:contain;
         }
         .game-container.active{display:flex}
         #board-element{
@@ -657,7 +661,8 @@
                 0 0 40px rgba(201,162,74,.12);
             background-image:url('board.jpg');
             background-size:cover;background-position:center;
-            margin-top:0;
+            margin:auto 0;
+            flex-shrink:0;
             aspect-ratio:1/1;
             overflow:hidden;
             position:relative;
@@ -768,10 +773,13 @@
         .game-container.edit-active{
             width:100%!important;
             max-width:520px;
-            overflow:visible;
+            overflow-y:auto;
+            overflow-x:hidden;
+            -webkit-overflow-scrolling:touch;
+            overscroll-behavior:contain;
             justify-content:flex-start;align-items:center;
-            padding:74px 0 8px;gap:8px;
-            height:100%;max-height:100vh;margin:0 auto;
+            padding:8px 0;gap:8px;
+            height:calc(100vh - 64px);margin:0 auto;
         }
         /* Hide turn status & thinking indicator in edit mode (not relevant) */
         .game-container.edit-active .turn-status,
@@ -779,7 +787,7 @@
             display:none !important;
         }
         .game-container.edit-active #board-element{
-            margin:0 auto;
+            margin:auto 0;
             width:92vmin;height:92vmin;
             max-width:480px;max-height:480px;
             border:2px solid var(--brass);
@@ -1252,6 +1260,68 @@
         }
 
         /* ───────── Responsive ───────── */
+
+        /* Mobile phones: shrink board + toolbar so action buttons stay visible */
+        @media (max-width:600px){
+            #board-element{
+                width:min(86vw, 86vmin, 360px);
+                height:min(86vw, 86vmin, 360px);
+            }
+            .game-container.edit-active #board-element{
+                width:min(86vw, 86vmin, 360px);
+                height:min(86vw, 86vmin, 360px);
+            }
+            .toolbar-piece-btn{width:42px;height:42px}
+            .toolbar-piece-btn img{width:34px;height:34px}
+            .edit-eraser-panel-btn{width:42px;height:42px;font-size:1.3em}
+            .round-btn{font-size:.7em;padding:10px 6px;letter-spacing:1px;gap:4px}
+            .round-btn svg{width:13px;height:13px}
+            .edit-action-btn{padding:8px 12px;font-size:.78em;letter-spacing:1px;gap:5px}
+            .edit-action-btns{gap:6px}
+            .first-turn-selector{padding:6px 14px;gap:10px}
+            .first-turn-label{font-size:.8em}
+            .first-turn-radio-label{font-size:.85em}
+            .controls-footer{padding:14px 10px;gap:8px;margin-top:8px}
+            .turn-status{font-size:.68em;top:42px;padding:4px 12px;letter-spacing:1.2px}
+            .thinking-indicator{font-size:.72em;top:62px}
+            #thinking-indicator{padding:5px 14px}
+        }
+
+        /* Very small phones: further compact */
+        @media (max-width:380px){
+            #board-element{
+                width:min(82vw, 82vmin, 300px);
+                height:min(82vw, 82vmin, 300px);
+            }
+            .game-container.edit-active #board-element{
+                width:min(82vw, 82vmin, 300px);
+                height:min(82vw, 82vmin, 300px);
+            }
+            .toolbar-piece-btn{width:38px;height:38px}
+            .toolbar-piece-btn img{width:30px;height:30px}
+            .edit-eraser-panel-btn{width:38px;height:38px;font-size:1.15em}
+            .edit-toolbar-row{gap:4px}
+            .round-btn{font-size:.65em;padding:9px 4px;letter-spacing:.8px;gap:3px}
+            .round-btn svg{width:12px;height:12px}
+            .edit-action-btn{padding:7px 10px;font-size:.72em;letter-spacing:.8px}
+            .first-turn-selector{padding:5px 10px;gap:8px}
+            .first-turn-label{font-size:.75em}
+            .first-turn-radio-label{font-size:.8em}
+            .controls-footer{padding:12px 8px;gap:6px}
+        }
+
+        /* Short screens: reduce board height further so buttons are reachable */
+        @media (max-height:640px) and (max-width:600px){
+            #board-element{
+                width:min(70vw, 70vmin, 280px);
+                height:min(70vw, 70vmin, 280px);
+            }
+            .game-container.edit-active #board-element{
+                width:min(70vw, 70vmin, 280px);
+                height:min(70vw, 70vmin, 280px);
+            }
+        }
+
         @media (min-width:700px){
             .menu-card{padding:42px 36px 34px}
             .menu-title{font-size:2.8em;letter-spacing:14px}
@@ -1264,12 +1334,65 @@
             .loading-text{font-size:1.1em}
         }
         @media (max-height:680px){
-            #board-element{margin-top:clamp(40px,6vh,70px);max-width:500px;max-height:500px}
+            #board-element{max-width:500px;max-height:500px}
             .controls-footer{padding:10px 14px;margin-top:6px}
             .menu-card{padding:24px 24px 22px}
             .menu-title{font-size:2em;letter-spacing:8px}
             .menu-emblem{width:80px;height:80px}
             .menu-emblem .piece-glyph{font-size:42px}
+        }
+        /* Desktop: bigger board, centered, fits inside the game container.
+           Placed AFTER the short-screen rules so the larger sizes win on desktop. */
+        @media (min-width:900px){
+            .game-container{
+                width:min(94vw, 720px);
+                max-width:720px;
+            }
+            #board-element{
+                width:min(70vh, 70vmin, 640px);
+                height:min(70vh, 70vmin, 640px);
+                max-width:640px;
+                max-height:640px;
+            }
+            .game-container.edit-active #board-element{
+                width:min(70vh, 70vmin, 600px);
+                height:min(70vh, 70vmin, 600px);
+                max-width:600px;
+                max-height:600px;
+            }
+            .game-container.edit-active{
+                max-width:720px;
+            }
+            .toolbar-piece-btn{width:52px;height:52px}
+            .toolbar-piece-btn img{width:42px;height:42px}
+            .edit-eraser-panel-btn{width:52px;height:52px;font-size:1.6em}
+            .controls-footer{max-width:720px}
+        }
+        /* Large desktop: even bigger board */
+        @media (min-width:1200px){
+            .game-container{
+                width:min(92vw, 820px);
+                max-width:820px;
+            }
+            #board-element{
+                width:min(78vh, 78vmin, 720px);
+                height:min(78vh, 78vmin, 720px);
+                max-width:720px;
+                max-height:720px;
+            }
+            .game-container.edit-active #board-element{
+                width:min(78vh, 78vmin, 680px);
+                height:min(78vh, 78vmin, 680px);
+                max-width:680px;
+                max-height:680px;
+            }
+            .game-container.edit-active{
+                max-width:820px;
+            }
+            .toolbar-piece-btn{width:56px;height:56px}
+            .toolbar-piece-btn img{width:46px;height:46px}
+            .edit-eraser-panel-btn{width:56px;height:56px;font-size:1.7em}
+            .controls-footer{max-width:820px}
         }
 
         .toast{

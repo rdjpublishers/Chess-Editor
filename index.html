@@ -131,16 +131,19 @@
         }
 
         *{box-sizing:border-box;margin:0;padding:0}
-        html,body{height:100%;width:100%}
+        html,body{height:auto;min-height:100%;width:100%}
+        html{scroll-behavior:smooth}
         body{
             font-family:var(--font-body);
             background:var(--bg-deep);
             color:var(--ink);
-            overflow:hidden;
+            overflow-x:hidden;
+            overflow-y:auto;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
-            touch-action:pan-x pan-y;
+            touch-action:pan-y;
             position:relative;
+            min-height:100vh;
         }
 
         body::before{
@@ -178,19 +181,25 @@
         }
 
         /* ───────── Screens ───────── */
+        /* Splash + loading use .screen as full-viewport fixed overlays.
+           Main-interface lives in document flow. */
+        #rdj-splash, #loading-screen{
+            position:fixed;inset:0;z-index:220;
+            padding-top:0;
+        }
         .screen{
-            position:absolute;inset:0;
             opacity:0;pointer-events:none;
             transition:opacity .55s ease;
             display:flex;flex-direction:column;align-items:center;justify-content:center;
             padding-top:64px;
             box-sizing:border-box;
         }
-        .screen.active{opacity:1;pointer-events:auto;z-index:10}
+        .screen.active{opacity:1;pointer-events:auto}
 
         /* ───────── Splash (replaces open_page.jpg) ───────── */
         #rdj-splash{
-            background:
+            background-color:var(--bg-deep);
+            background-image:
                 radial-gradient(circle at 50% 45%, rgba(201,162,74,.22) 0%, transparent 45%),
                 radial-gradient(circle at 50% 60%, rgba(139,31,44,.12) 0%, transparent 55%);
         }
@@ -282,7 +291,7 @@
         }
 
         /* ───────── Loading screen ───────── */
-        #loading-screen{background:transparent}
+        #loading-screen{background-color:var(--bg-deep);background-image:none}
         .loader-container{width:80%;max-width:340px;text-align:center}
         .loading-text{
             color:var(--brass-bright);
@@ -306,42 +315,24 @@
             transition:width .15s linear;
         }
 
-        /* ───────── Top bar ───────── */
+        /* ───────── Top bar (minimal, no duplicate branding) ───────── */
         .top-bar{
-            position:absolute;top:0;left:0;right:0;
-            display:flex;justify-content:space-between;align-items:center;
-            padding:12px 16px;
-            height:64px;
-            box-sizing:border-box;
+            position:absolute;top:0;right:14px;left:auto;
+            display:flex;align-items:center;gap:10px;
+            padding:14px 0;
             z-index:30;
-            background:linear-gradient(180deg, rgba(7,9,15,.96) 0%, rgba(7,9,15,.88) 70%, rgba(7,9,15,0));
-            border-bottom:1px solid rgba(201,162,74,.15);
-            backdrop-filter:blur(8px);
-            -webkit-backdrop-filter:blur(8px);
         }
         .top-brand{
-            display:flex;align-items:center;gap:10px;
-            font-family:var(--font-display);
-            font-weight:600;
-            font-size:.9em;
-            letter-spacing:4px;
-            color:var(--brass);
-            text-transform:uppercase;
+            display:none;
         }
         .top-brand .crest-mini{
-            width:28px;height:28px;
-            display:flex;align-items:center;justify-content:center;
-            border-radius:50%;
-            background:radial-gradient(circle at 30% 30%, rgba(240,212,138,.3), rgba(201,162,74,.15) 60%, transparent);
-            box-shadow:inset 0 0 0 1px rgba(240,212,138,.4);
-            font-size:18px;color:var(--brass-bright);
-            line-height:1;
+            display:none;
         }
         .icon-btn{
             background:rgba(13,17,25,.65);
-            backdrop-filter:blur(6px);
-            -webkit-backdrop-filter:blur(6px);
-            border:1px solid rgba(201,162,74,.22);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            border:1px solid rgba(201,162,74,.25);
             cursor:pointer;padding:8px;
             display:flex;align-items:center;justify-content:center;
             border-radius:50%;
@@ -349,11 +340,32 @@
             transition:transform .15s ease, background .2s, border-color .2s, box-shadow .2s;
             -webkit-tap-highlight-color:transparent;
             color:var(--ink);
+            box-shadow:0 4px 12px rgba(0,0,0,.45), inset 0 1px 0 rgba(240,212,138,.06);
         }
-        .icon-btn:hover{background:rgba(201,162,74,.18);border-color:var(--brass);box-shadow:0 0 16px rgba(201,162,74,.25)}
+        .icon-btn:hover{background:rgba(201,162,74,.18);border-color:var(--brass);box-shadow:0 6px 18px rgba(0,0,0,.55), 0 0 18px rgba(201,162,74,.28)}
         .icon-btn:active{transform:scale(.92)}
+        .icon-btn:focus-visible{outline:2px solid var(--brass-bright);outline-offset:2px}
         .icon-btn svg{width:20px;height:20px;display:block}
-        .back-arrow{position:absolute;top:80px;left:18px;z-index:31}
+        /* Back arrow pinned top-left during editor / game */
+        .back-arrow{
+            position:absolute;top:14px;left:14px;z-index:31;
+            /* Same .icon-btn styles are applied via class composition */
+            background:rgba(13,17,25,.65);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            border:1px solid rgba(201,162,74,.25);
+            cursor:pointer;padding:8px;
+            display:flex;align-items:center;justify-content:center;
+            border-radius:50%;
+            width:42px;height:42px;
+            color:var(--ink);
+            box-shadow:0 4px 12px rgba(0,0,0,.45), inset 0 1px 0 rgba(240,212,138,.06);
+            transition:transform .15s ease, background .2s, border-color .2s, box-shadow .2s;
+        }
+        .back-arrow:hover{background:rgba(201,162,74,.18);border-color:var(--brass);box-shadow:0 6px 18px rgba(0,0,0,.55), 0 0 18px rgba(201,162,74,.28)}
+        .back-arrow:active{transform:scale(.92)}
+        .back-arrow:focus-visible{outline:2px solid var(--brass-bright);outline-offset:2px}
+        .back-arrow svg{width:20px;height:20px;display:block}
         .back-arrow .arrow-symbol{
             font-size:18px;color:var(--ink);
             font-weight:600;
@@ -631,7 +643,7 @@
             display:none;
             flex-direction:column;align-items:center;
             width:min(96vw, 600px);
-            height:calc(100vh - 64px);
+            min-height:calc(100vh - 64px);
             padding-top:8px;
             padding-bottom:8px;
             box-sizing:border-box;
@@ -644,6 +656,17 @@
             overscroll-behavior:contain;
         }
         .game-container.active{display:flex}
+        /* Main interface is the hero/editor area; lives in document flow */
+        #main-interface{
+            position:relative;
+            z-index:10;
+            min-height:calc(100vh - 64px);
+            width:100%;
+            padding-top:64px;
+            padding-bottom:calc(var(--global-footer-h, 54px) + 24px);
+            box-sizing:border-box;
+            justify-content:center;
+        }
         #board-element{
             display:grid;
             grid-template-columns:repeat(8,1fr);
@@ -769,7 +792,254 @@
         .round-btn svg{width:14px;height:14px}
 
         /* ───────── Edit mode ───────── */
-        #main-interface.edit-screen{background:linear-gradient(180deg, #0a1410 0%, #07100c 100%)!important;overflow:hidden}
+        #main-interface.edit-screen{background:linear-gradient(180deg, #0a1410 0%, #07100c 100%)!important}
+        #main-interface.edit-screen{overflow:visible}
+
+        /* Edit screen in flow needs a definite height so it doesn't collapse */
+        #main-interface.edit-screen{
+            min-height:calc(100vh - 64px);
+        }
+
+        /* Info / hero text block on the splash menu */
+        .game-info-block{
+            margin-top:18px;
+            padding:14px 16px;
+            background:linear-gradient(180deg, rgba(201,162,74,.07), rgba(201,162,74,.02));
+            border:1px solid rgba(201,162,74,.20);
+            border-left:2px solid var(--brass);
+            border-radius:var(--radius-md);
+            text-align:left;
+            position:relative;z-index:1;
+            box-shadow:inset 0 1px 0 rgba(240,212,138,.06);
+        }
+        .game-info-block p{
+            margin:0;
+            color:var(--ink-soft);
+            font-size:.84em;
+            line-height:1.6;
+            font-family:var(--font-body);
+            letter-spacing:.15px;
+        }
+        .game-info-block strong{
+            color:var(--brass-bright);
+            font-weight:600;
+        }
+        @media (max-width:480px){
+            .game-info-block{margin-top:14px;padding:12px 14px}
+            .game-info-block p{font-size:.8em}
+        }
+
+        /* ───────── Persistent site footer ───────── */
+        :root{ --global-footer-h:54px; }
+        @media (max-width:520px){ :root{ --global-footer-h:96px; } }
+        .global-footer{
+            position:fixed;
+            left:0;right:0;bottom:0;
+            z-index:90;
+            background:linear-gradient(180deg, rgba(7,9,15,.86), rgba(13,17,25,.97));
+            border-top:1px solid rgba(201,162,74,.28);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            padding:9px 14px;
+            display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;
+            text-align:center;
+            color:var(--ink-soft);
+            font-family:var(--font-body);
+            font-size:12px;line-height:1.4;letter-spacing:.6px;
+            box-shadow:0 -8px 24px rgba(0,0,0,.55), inset 0 1px 0 rgba(240,212,138,.10);
+        }
+        .global-footer .copyright{
+            font-family:var(--font-display);
+            font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
+            color:var(--brass);font-size:11px;margin-right:6px;white-space:nowrap;
+        }
+        .global-footer .sep{color:var(--brass-dim);opacity:.6;margin:0 4px;user-select:none;}
+        .global-footer nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px;}
+        .global-footer a{
+            color:var(--ink-soft);text-decoration:none;font-weight:500;letter-spacing:.9px;
+            padding:2px 4px;border-radius:4px;
+            transition:color .2s, text-shadow .2s, background .2s;
+            -webkit-tap-highlight-color:transparent;
+            white-space:nowrap;
+        }
+        .global-footer a:hover,
+        .global-footer a:focus-visible{
+            color:var(--brass-bright);
+            text-shadow:0 0 10px rgba(240,212,138,.4);
+            background:rgba(201,162,74,.08);
+            outline:none;
+        }
+        @media (max-width:520px){
+            .global-footer{font-size:11.5px;padding:8px 10px}
+            .global-footer .copyright{flex-basis:100%;margin:0 0 4px 0;text-align:center}
+        }
+
+        /* Toast must sit ABOVE the persistent footer */
+        .toast{
+            bottom:calc(var(--global-footer-h) + 14px) !important;
+        }
+
+        /* ───────── Content sections (AdSense-ready; hidden in editor) ───────── */
+        .content-blocks{
+            position:relative;
+            z-index:5;
+            max-width:880px;
+            margin:0 auto;
+            padding:48px 24px calc(var(--global-footer-h, 54px) + 80px);
+        }
+        .content-block{margin-bottom:60px;scroll-margin-top:80px}
+        .content-block:last-child{margin-bottom:0}
+        .content-block h2{
+            font-family:var(--font-display);
+            font-size:1.85em;font-weight:700;color:var(--brass-bright);
+            letter-spacing:3px;text-transform:uppercase;
+            margin:0 0 22px;padding-bottom:14px;
+            border-bottom:1px solid rgba(201,162,74,.28);
+            text-shadow:0 2px 10px rgba(0,0,0,.5);
+            line-height:1.2;
+        }
+        .content-block h2 .h2-prefix{
+            display:inline-block;
+            color:var(--brass-dim);
+            font-size:.5em;letter-spacing:4px;margin-right:12px;vertical-align:middle;font-weight:600;
+        }
+        .content-block h3{
+            font-family:var(--font-display);
+            font-size:1.22em;font-weight:600;color:var(--brass);
+            letter-spacing:1.4px;margin:28px 0 12px;line-height:1.3;
+        }
+        .content-block h4{
+            color:var(--brass-bright);font-size:.95em;font-weight:600;
+            letter-spacing:.8px;margin:20px 0 8px;
+        }
+        .content-block p{
+            color:var(--ink-soft);font-size:1em;line-height:1.78;
+            margin:0 0 16px;max-width:72ch;
+        }
+        .content-block p.lead{font-size:1.08em;color:var(--ink);line-height:1.72;}
+        .content-block strong{color:var(--brass-bright);font-weight:600}
+        .content-block em{color:var(--ink);font-style:italic}
+        .content-block a{
+            color:var(--brass-bright);text-decoration:none;
+            border-bottom:1px dotted rgba(201,162,74,.5);
+            transition:color .2s, border-color .2s;
+        }
+        .content-block a:hover{color:var(--ink);border-bottom-color:var(--brass-bright)}
+        .content-block ul, .content-block ol{
+            color:var(--ink-soft);font-size:1em;line-height:1.8;
+            margin:0 0 20px;padding-left:24px;max-width:72ch;
+        }
+        .content-block li{margin-bottom:8px}
+        .content-block li::marker{color:var(--brass-dim)}
+        .content-block ul.features{
+            list-style:none;padding:0;
+            display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+            gap:14px;margin:0 0 20px;
+        }
+        .content-block ul.features li{
+            background:linear-gradient(180deg, rgba(31,39,56,.55), rgba(20,27,42,.55));
+            border:1px solid rgba(201,162,74,.22);
+            border-left:2px solid var(--brass);
+            border-radius:var(--radius-md);
+            padding:14px 16px;color:var(--ink-soft);
+            line-height:1.55;font-size:.94em;
+            position:relative;padding-left:42px;
+        }
+        .content-block ul.features li::before{
+            content:"♛";position:absolute;left:14px;top:13px;
+            color:var(--brass);font-size:1.1em;line-height:1;
+        }
+        .content-block ul.features li strong{
+            display:block;color:var(--brass-bright);
+            font-size:.95em;margin-bottom:4px;letter-spacing:.4px;
+        }
+
+        /* FAQ */
+        .faq-list{display:flex;flex-direction:column;gap:12px;}
+        .faq-item{
+            background:linear-gradient(180deg, rgba(31,39,56,.55), rgba(20,27,42,.55));
+            border:1px solid rgba(201,162,74,.22);
+            border-radius:var(--radius-md);
+            overflow:hidden;
+            transition:border-color .2s, box-shadow .2s;
+        }
+        .faq-item:hover{border-color:rgba(201,162,74,.45)}
+        .faq-item[open]{
+            border-color:var(--brass);
+            box-shadow:0 0 0 1px rgba(201,162,74,.15), 0 8px 24px rgba(0,0,0,.35);
+        }
+        .faq-item summary{
+            padding:16px 20px;font-weight:600;color:var(--ink);
+            cursor:pointer;list-style:none;
+            display:flex;justify-content:space-between;align-items:center;gap:12px;
+            font-family:var(--font-body);font-size:1em;letter-spacing:.2px;
+            transition:background .2s;
+        }
+        .faq-item summary::-webkit-details-marker{display:none}
+        .faq-item summary:hover{background:rgba(201,162,74,.07)}
+        .faq-item summary::after{
+            content:"+";font-size:1.6em;color:var(--brass);
+            transition:transform .25s;font-weight:400;line-height:1;
+        }
+        .faq-item[open] summary::after{transform:rotate(45deg)}
+        .faq-item .faq-body{
+            padding:0 20px 18px;color:var(--ink-soft);line-height:1.7;font-size:.96em;
+        }
+        .faq-item .faq-body p{margin:0 0 8px}
+        .faq-item .faq-body p:last-child{margin-bottom:0}
+
+        /* Quick nav */
+        .quick-nav{
+            display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:center;
+            margin:32px auto 0;
+            max-width:880px;padding:18px 24px;
+            background:linear-gradient(180deg, rgba(31,39,56,.55), rgba(20,27,42,.55));
+            border:1px solid rgba(201,162,74,.22);
+            border-radius:var(--radius-md);
+            position:relative;z-index:5;
+        }
+        .quick-nav a{
+            color:var(--ink-soft);text-decoration:none;
+            font-size:.85em;font-weight:500;letter-spacing:.4px;
+            padding:6px 12px;border-radius:999px;
+            border:1px solid rgba(201,162,74,.2);
+            background:rgba(7,9,15,.4);
+            transition:all .2s;
+        }
+        .quick-nav a:hover{
+            color:var(--brass-bright);border-color:var(--brass);
+            background:rgba(201,162,74,.12);
+            text-shadow:0 0 8px rgba(240,212,138,.3);
+        }
+
+        @media (max-width:680px){
+            .content-blocks{padding:36px 18px calc(var(--global-footer-h, 54px) + 80px)}
+            .content-block{margin-bottom:48px}
+            .content-block h2{font-size:1.5em;letter-spacing:2px}
+            .content-block h3{font-size:1.12em}
+            .content-block p, .content-block ul, .content-block ol{font-size:.98em}
+            .quick-nav{padding:14px 16px;margin-top:24px}
+            .quick-nav a{font-size:.8em;padding:5px 10px}
+        }
+
+        /* Hide content sections while editor / game is in progress */
+        body.in-editor #quick-nav,
+        body.in-editor .content-blocks{
+            display:none;
+        }
+        @media (max-height:780px){
+            body.in-editor #quick-nav,
+            body.in-editor .content-blocks{
+                display:none !important;
+            }
+        }
+
+        /* While splash / loading overlays are visible, hide everything behind them */
+        body.loading #quick-nav,
+        body.loading .content-blocks,
+        body.loading .global-footer{
+            display:none !important;
+        }
         .game-container.edit-active{
             width:100%!important;
             max-width:520px;
@@ -1456,21 +1726,17 @@
     </div>
 
     <div id="main-interface" class="screen">
+        <button id="back-to-menu-btn" class="back-arrow" aria-label="Back to menu" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
         <header class="top-bar">
-            <div class="top-brand">
-                <span class="crest-mini">♔</span>
-                <span>Editor</span>
-            </div>
-            <button id="open-settings-btn" class="icon-btn" aria-label="Settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <button id="open-settings-btn" class="icon-btn" aria-label="Open settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="3"></circle>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-            </button>
-            <button id="back-to-menu-btn" class="icon-btn back-arrow" aria-label="Back to menu" style="display:none">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
         </header>
@@ -1497,6 +1763,9 @@
                         <span>Enter Editor</span>
                     </button>
                 </div>
+                <section class="game-info-block" aria-label="About this chess editor">
+                    <p><strong>Free online chess board editor by RDJ Publishers.</strong> Build any custom chess position, save and share setups, analyze piece placement, or play from a custom starting arrangement. One click to flip sides, clear, undo, and start a fresh position. No sign-up, no download — works instantly in your browser on desktop and mobile.</p>
+                </section>
                 <div class="piece-strip" aria-hidden="true">
                     <span>♙</span><span>♘</span><span>♗</span><span>♖</span><span>♕</span><span>♔</span><span>♖</span><span>♗</span><span>♘</span><span>♙</span>
                 </div>
@@ -1647,6 +1916,181 @@
             </div>
         </div>
     </div>
+
+    <nav class="quick-nav" aria-label="Page sections" id="quick-nav">
+        <a href="#about">About</a>
+        <a href="#how-to-use">How to Use</a>
+        <a href="#tools">Editor Tools</a>
+        <a href="#features">Features</a>
+        <a href="#tips">Tips</a>
+        <a href="#faq">FAQ</a>
+    </nav>
+
+    <article class="content-blocks" id="content-blocks" aria-label="Chess editor guide and information">
+
+        <section class="content-block" id="about" aria-labelledby="about-h2">
+            <h2 id="about-h2"><span class="h2-prefix">01</span>About RDJ Publishers Chess Editor</h2>
+            <p class="lead">The RDJ Publishers <strong>Chess Editor</strong> is a free, browser-based chess board setup tool that lets you build any chess position from scratch and play from it instantly. Whether you want to record an opening line, recreate a famous game, design a tactic puzzle, set up a teaching diagram, or just experiment with custom piece placements, this editor gives you a fast, polished canvas — no sign-up, no download, no plugins.</p>
+            <p>Designed and built by <strong>RDJ Publishers</strong>, the editor focuses on three core ideas: <strong>instant setup</strong>, <strong>clean visualization</strong>, and <strong>seamless play</strong>. Open the page, drop pieces on the board, and within seconds you're looking at exactly the position you imagined. Everything runs in plain HTML5 and JavaScript in your browser — no backend, no account required.</p>
+            <p>Once your position is set, you can either keep editing or jump straight into a game. In <strong>Two-Player mode</strong>, the friend sitting beside you plays the opposite color. In <strong>vs Computer mode</strong>, three difficulty levels (Easy / Medium / Hard) let you pick how tough the AI is for the side you didn't set up. Either way, every official chess rule applies from the moment the game starts: <strong>castling</strong>, <strong>en passant</strong>, <strong>pawn promotion</strong>, <strong>check</strong>, <strong>checkmate</strong>, and <strong>stalemate</strong> all work correctly.</p>
+            <p>Our goal with this tool is to make chess content creation as friction-free as possible. There are no watermarks, no forced logins, and no upsells — just an editor that opens in your browser and works.</p>
+        </section>
+
+        <section class="content-block" id="how-to-use" aria-labelledby="htu-h2">
+            <h2 id="htu-h2"><span class="h2-prefix">02</span>How to Use the Editor</h2>
+            <p>The editor is built around a simple three-step workflow: <strong>set up</strong> your board, <strong>refine</strong> it, and <strong>play</strong> from it. Each step is reachable with one click from the main screen.</p>
+
+            <h3>Step 1 — Open the Editor</h3>
+            <p>From the home screen, tap <strong>Enter Editor</strong>. The board appears with the standard starting position and the piece toolbar below it. You can also tap the small chess piece icons on the board itself to start swapping and removing pieces — but the toolbar is the faster way for a full layout.</p>
+
+            <h3>Step 2 — Place Pieces</h3>
+            <p>Use the piece palette at the bottom of the screen. The toolbar is divided into three rows:</p>
+            <ul>
+                <li><strong>White pieces</strong> — King, Queen, Rook, Bishop, Knight, Pawn.</li>
+                <li><strong>Black pieces</strong> — the same six, mirrored for the opposite side.</li>
+                <li><strong>Special tools</strong> — Clear board, Erase single square, and Undo last edit.</li>
+            </ul>
+            <p>Tap a piece in the toolbar to "pick it up", then tap any square on the board to drop it there. If the square is already occupied, the new piece replaces the old one. The <strong>Erase</strong> tool removes whatever is on the square you tap next. The <strong>Clear</strong> button wipes the entire board back to empty with one tap.</p>
+
+            <h3>Step 3 — Refine and Play</h3>
+            <p>Use <strong>Undo</strong> if you misplace a piece — it walks back through your edits one step at a time. Use the <strong>White / Black</strong> toggle to choose which side moves first when you start the game. When the board looks right, tap <strong>Play</strong> to launch either a local two-player match or a Computer AI match from your custom position.</p>
+        </section>
+
+        <section class="content-block" id="tools" aria-labelledby="tools-h2">
+            <h2 id="tools-h2"><span class="h2-prefix">03</span>Editor Tools — Quick Reference</h2>
+            <p>Every tool you need to build a clean position is one tap away.</p>
+            <h3>Piece Palette</h3>
+            <ul>
+                <li><strong>White pieces:</strong> King, Queen, Rook, Bishop, Knight, Pawn. Tap, then tap a square to drop.</li>
+                <li><strong>Black pieces:</strong> Same six pieces for the opposing side.</li>
+                <li><strong>Erase:</strong> Pick up, then tap any square to remove the piece sitting on it.</li>
+                <li><strong>Clear board:</strong> One tap empties the entire 8×8.</li>
+                <li><strong>Undo:</strong> Walks the board back through your edits, one move at a time.</li>
+            </ul>
+
+            <h3>Side Selector</h3>
+            <p>The two side-radio buttons (<strong>White</strong> and <strong>Black</strong>) choose which color moves first when you begin a game from your setup. White always moves first in chess, so the default is White — but switching to Black lets you set up a position where the responder's task is what you want to study.</p>
+
+            <h3>Play and Restart</h3>
+            <ul>
+                <li><strong>Play (Two-Player):</strong> Starts a local game with the other human sharing your screen.</li>
+                <li><strong>Play (vs Computer):</strong> Choose a difficulty, then play against the AI.</li>
+                <li><strong>Main Menu:</strong> Return to the home screen. Returning to the menu discards the current game (but not your edited position unless you tap Clear).</li>
+            </ul>
+        </section>
+
+        <section class="content-block" id="features" aria-labelledby="features-h2">
+            <h2 id="features-h2"><span class="h2-prefix">04</span>Features</h2>
+            <p>Everything you need to set up, share, and play from custom chess positions — nothing you don't.</p>
+            <ul class="features" aria-label="Chess editor features">
+                <li><strong>Full piece set</strong>King, queen, two rooks, two bishops, two knights, and eight pawns for each side, available with a single tap.</li>
+                <li><strong>Drag-and-drop pieces</strong>Tap a piece in the toolbar, then tap a square to place it — replace or remove with the next tap.</li>
+                <li><strong>One-tap clear</strong>Wipe the entire board back to empty when you want to start a new setup from scratch.</li>
+                <li><strong>Undo stack</strong>Roll back edits one step at a time until you're back where you want to be.</li>
+                <li><strong>Side-of-move selector</strong>Choose which color moves first when the game begins — useful for puzzles and analysis.</li>
+                <li><strong>Instant play</strong>From any position, jump into a Two-Player match or a Computer match at Easy, Medium, or Hard.</li>
+                <li><strong>Full chess rules</strong>Castling, en passant, pawn promotion, check, checkmate, stalemate — all enforced from move one.</li>
+                <li><strong>Mobile-friendly</strong>Touch-tuned toolbar and board; works on phones, tablets, laptops, and desktops.</li>
+                <li><strong>No sign-up, no download</strong>Open the page and start placing pieces. Nothing to install, no account required.</li>
+                <li><strong>Sound effects (toggle)</strong>Subtle move and capture sounds, switchable from Settings.</li>
+                <li><strong>Persistent site navigation</strong>Home, About, Contact, Privacy Policy, and Terms are always reachable in the footer.</li>
+            </ul>
+        </section>
+
+        <section class="content-block" id="tips" aria-labelledby="tips-h2">
+            <h2 id="tips-h2"><span class="h2-prefix">05</span>Editor Tips &amp; Use Cases</h2>
+            <p>The editor is useful far beyond casual play. Here are a few ways chess players, teachers, and creators put it to work.</p>
+
+            <h3>Recording An Opening Line</h3>
+            <p>Set up the position after each move of the line you want to study. Pausing at critical moments — sacrifices, tactics, endgames — lets you revisit them move by move.</p>
+
+            <h3>Recreating Famous Games</h3>
+            <p>Place the pieces exactly as they stood at any move of a master game. Then play from there against the Computer to test how the game might have continued. Useful for both learning famous endgames and exploring historical what-ifs.</p>
+
+            <h3>Designing Puzzles &amp; Studies</h3>
+            <p>Build a "mate-in-X" position, then hand it to a friend in Two-Player mode and challenge them to solve it from scratch. Use <strong>Erase</strong> to clear candidate squares you don't want them to consider.</p>
+
+            <h3>Teaching &amp; Tutorials</h3>
+            <p>Place pieces to explain concepts visually — back-rank mates, discovered attacks, classic opening traps — then have students play from your setup to internalize the pattern.</p>
+
+            <h3>Branding-Free Screenshots</h3>
+            <p>Capture clean screenshots of any custom position for slides, articles, social posts, or video thumbnails. The board renders crisply at every viewport size.</p>
+
+            <h3>Designing Vlogger Content</h3>
+            <p>Build complex positions in seconds and jump straight to playing them on camera. No app switching, no loading screens — just the board, the pieces, and the moment.</p>
+        </section>
+
+        <section class="content-block" id="faq" aria-labelledby="faq-h2">
+            <h2 id="faq-h2"><span class="h2-prefix">06</span>Frequently Asked Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Is the Chess Editor really free?</summary>
+                    <div class="faq-body">
+                        <p>Yes. The Chess Editor is completely free to use. There are no in-app purchases, no subscriptions, and no hidden fees. You will see ordinary contextual ads on the page, which help us keep the project running.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Do I need to create an account?</summary>
+                    <div class="faq-body">
+                        <p>No account or sign-up is required. Open the page and start placing pieces immediately.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I save and share a chess position?</summary>
+                    <div class="faq-body">
+                        <p>Once a position is on the board, you can share it via a normal screenshot of the page or by sharing a link. (Built-in shareable URLs and FEN export are on the roadmap.)</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Does this work on phones and tablets?</summary>
+                    <div class="faq-body">
+                        <p>Yes. The editor is fully touch-friendly and responsive. The piece palette and board work the same way on iOS, Android, Windows, macOS, and Linux.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>How strong is the Computer AI?</summary>
+                    <div class="faq-body">
+                        <p>The AI uses alpha-beta search with piece-square tables, transposition tables, and killer-move heuristics. It's a solid casual opponent at Easy and Medium, and a real challenge at Hard for club-level players.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Are all chess rules enforced from the custom position?</summary>
+                    <div class="faq-body">
+                        <p>Yes. From the very first move after you tap Play, every official rule applies — castling (kingside and queenside), en passant, pawn promotion, check, checkmate, and stalemate.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Does the editor collect my data?</summary>
+                    <div class="faq-body">
+                        <p>No personal data is collected by the editor itself. RDJ Publishers may use standard, anonymized analytics (Google Analytics) and contextual ads (Google AdSense) to understand usage and keep the site running, as described in the Privacy Policy.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>Who made this editor?</summary>
+                    <div class="faq-body">
+                        <p>The Chess Editor was designed, developed, and published by RDJ Publishers. For support, contact us at <a href="mailto:RDJpublishers@gmail.com">RDJpublishers@gmail.com</a>.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+    </article>
+
+    <footer class="global-footer" role="contentinfo" aria-label="Site navigation">
+        <span class="copyright">© 2026 RDJ Publishers</span>
+        <nav aria-label="Footer">
+            <a href="https://rdjpublishers.com/">Home</a>
+            <span class="sep">·</span>
+            <a href="https://rdjpublishers.com/about.html">About</a>
+            <span class="sep">·</span>
+            <a href="https://rdjpublishers.com/contact.html">Contact</a>
+            <span class="sep">·</span>
+            <a href="https://rdjpublishers.com/privacy-policy.html">Privacy Policy</a>
+            <span class="sep">·</span>
+            <a href="https://rdjpublishers.com/terms.html">Terms</a>
+        </nav>
+    </footer>
 
     <div id="toast" class="toast"></div>
 
@@ -2022,6 +2466,7 @@
                 hideCheckmateBanner();
                 openSettingsBtn.style.display='none';
                 if(radioWhite) radioWhite.checked=true;
+                document.body.classList.add('in-editor');
                 buildEditToolbar();
                 renderEditBoard();
             }
@@ -2200,9 +2645,9 @@
             function restartGame(){cancelAIFully();board=JSON.parse(JSON.stringify(initialBoard));selectedSquare=null;turn='white';moveHistory=[];isGameOver=false;checkmatedColor=null;canCastle={K:true,Q:true,k:true,q:true};enPassantTarget=null;lastAiMove=null;lastPlayerMove=null;hideGameOverModal();promotionModal.classList.remove('visible');restartConfirmModal.classList.remove('visible');hideCheckmateBanner();gameBoardContainer.style.opacity='1';gameControlsFooter.style.opacity='1';boardElement.style.opacity='1';boardElement.style.pointerEvents='';thinkingIndicator.style.display='none';renderBoard();}
             function playButtonSound(){if(isSoundOn&&isSoundAvailable){try{buttonSound.play().catch(()=>{isSoundAvailable=false;});}catch(e){isSoundAvailable=false;}}}
             function toggleSound(){isSoundOn=!isSoundOn;soundSwitch.textContent=isSoundOn?'On':'Off';soundSwitch.classList.toggle('on',isSoundOn);if(isSoundOn)playButtonSound();}
-            function goToMenu(){cancelAIFully();isSettingsOpen=false;isComputerMode=false;isEditMode=false;settingsModal.classList.remove('visible');aboutModal.classList.remove('visible');goBackConfirmModal.classList.remove('visible');difficultyMenu.style.display='none';gameBoardContainer.classList.remove('active','edit-active');mainInterface.classList.remove('edit-screen');hideGameOverModal();gameControlsFooter.style.display='none';editControlsFooter.style.display='none';editPieceToolbar.style.display='none';editPlaySection.style.display='none';backToMenuBtn.style.display='none';boardElement.style.pointerEvents='';boardElement.style.opacity='1';thinkingIndicator.style.display='none';hideCheckmateBanner();openSettingsBtn.style.display='block';splashMenu.classList.add('active');restartGame();playButtonSound();}
-            function startGame(){isComputerMode=false;splashMenu.classList.remove('active');gameBoardContainer.classList.add('active');gameControlsFooter.style.display='flex';backToMenuBtn.style.display='block';restartGame();playButtonSound();}
-            function startComputerGame(difficulty){isComputerMode=true;aiDifficulty=difficulty;computerColor='black';difficultyMenu.style.display='none';splashMenu.classList.remove('active');gameBoardContainer.classList.add('active');gameControlsFooter.style.display='flex';backToMenuBtn.style.display='block';restartGame();playButtonSound();}
+            function goToMenu(){cancelAIFully();isSettingsOpen=false;isComputerMode=false;isEditMode=false;settingsModal.classList.remove('visible');aboutModal.classList.remove('visible');goBackConfirmModal.classList.remove('visible');difficultyMenu.style.display='none';gameBoardContainer.classList.remove('active','edit-active');mainInterface.classList.remove('edit-screen');hideGameOverModal();gameControlsFooter.style.display='none';editControlsFooter.style.display='none';editPieceToolbar.style.display='none';editPlaySection.style.display='none';backToMenuBtn.style.display='none';boardElement.style.pointerEvents='';boardElement.style.opacity='1';thinkingIndicator.style.display='none';hideCheckmateBanner();openSettingsBtn.style.display='block';document.body.classList.remove('in-editor');splashMenu.classList.add('active');restartGame();playButtonSound();window.scrollTo({top:0,behavior:'smooth'});}
+            function startGame(){isComputerMode=false;splashMenu.classList.remove('active');gameBoardContainer.classList.add('active');gameControlsFooter.style.display='flex';backToMenuBtn.style.display='block';restartGame();document.body.classList.add('in-editor');playButtonSound();window.scrollTo({top:0,behavior:'smooth'});}
+            function startComputerGame(difficulty){isComputerMode=true;aiDifficulty=difficulty;computerColor='black';difficultyMenu.style.display='none';splashMenu.classList.remove('active');gameBoardContainer.classList.add('active');gameControlsFooter.style.display='flex';backToMenuBtn.style.display='block';restartGame();document.body.classList.add('in-editor');playButtonSound();window.scrollTo({top:0,behavior:'smooth'});}
             function viewLastGameState(){if(moveHistory.length){const ls=moveHistory[moveHistory.length-1];board=ls.board.map(r=>[...r]);turn=ls.turn;canCastle={...ls.canCastle};enPassantTarget=ls.enPassantTarget?{...ls.enPassantTarget}:null;checkmatedColor=ls.checkmatedColor||null;isGameOver=true;hideGameOverModal();gameBoardContainer.style.opacity='1';gameControlsFooter.style.opacity='1';renderBoard();}playButtonSound();}
             
             function doUndo(){
@@ -2243,8 +2688,9 @@
             }
             
             // Event listeners
+            document.body.classList.add('loading');
             rdjSplash.style.pointerEvents='none';
-            setTimeout(()=>{rdjSplash.style.opacity='0';setTimeout(()=>{rdjSplash.classList.remove('active');loadingScreen.classList.add('active');let p=0;const iv=setInterval(()=>{p+=4;loadingProgress.style.width=p+'%';if(p>=100){clearInterval(iv);loadingScreen.style.pointerEvents='none';loadingScreen.style.opacity='0';setTimeout(()=>{loadingScreen.classList.remove('active');mainInterface.classList.add('active');splashMenu.classList.add('active');},600);}},120);},600);},2500);
+            setTimeout(()=>{rdjSplash.style.opacity='0';setTimeout(()=>{rdjSplash.classList.remove('active');loadingScreen.classList.add('active');let p=0;const iv=setInterval(()=>{p+=4;loadingProgress.style.width=p+'%';if(p>=100){clearInterval(iv);loadingScreen.style.pointerEvents='none';loadingScreen.style.opacity='0';setTimeout(()=>{loadingScreen.classList.remove('active');mainInterface.classList.add('active');splashMenu.classList.add('active');document.body.classList.remove('loading');},600);}},120);},600);},2500);
             editModeBtn.addEventListener('click',startEditMode);
             editClearBtn.addEventListener('click',()=>{playButtonSound();editRestart();});
             editUndoBtn.addEventListener('click',editDoUndo);

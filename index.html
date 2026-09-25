@@ -830,8 +830,8 @@
         }
 
         /* ───────── Persistent site footer ───────── */
-        :root{ --global-footer-h:54px; }
-        @media (max-width:520px){ :root{ --global-footer-h:96px; } }
+        :root{ --global-footer-h:78px; }
+        @media (max-width:520px){ :root{ --global-footer-h:120px; } }
         .global-footer{
             position:fixed;
             left:0;right:0;bottom:0;
@@ -853,6 +853,22 @@
             font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
             color:var(--brass);font-size:11px;margin-right:6px;white-space:nowrap;
         }
+        .global-footer .adsense-disclosure{
+            flex-basis:100%;
+            margin:0 0 6px 0;
+            padding:0;
+            font-family:var(--font-body);
+            font-size:10.5px;
+            font-weight:400;
+            letter-spacing:.3px;
+            text-transform:none;
+            line-height:1.45;
+            color:var(--ink-soft);
+            opacity:.78;
+            text-align:center;
+            white-space:normal;
+            max-width:880px;
+        }
         .global-footer .sep{color:var(--brass-dim);opacity:.6;margin:0 4px;user-select:none;}
         .global-footer nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px;}
         .global-footer a{
@@ -871,6 +887,7 @@
         }
         @media (max-width:520px){
             .global-footer{font-size:11.5px;padding:8px 10px}
+            .global-footer .adsense-disclosure{font-size:10px;margin:0 0 5px 0;line-height:1.4}
             .global-footer .copyright{flex-basis:100%;margin:0 0 4px 0;text-align:center}
         }
 
@@ -2078,6 +2095,7 @@
     </article>
 
     <footer class="global-footer" role="contentinfo" aria-label="Site navigation">
+        <p class="adsense-disclosure">Advertising on this page may be served by Google AdSense using cookies or device-level identifiers. See our Privacy Policy for details and opt-out information.</p>
         <span class="copyright">© 2026 RDJ Publishers</span>
         <nav aria-label="Footer">
             <a href="https://rdjpublishers.com/">Home</a>
